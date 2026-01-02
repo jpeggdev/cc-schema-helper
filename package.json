@@ -3,7 +3,7 @@
   "displayName": "Claude Code Settings Helper",
   "description": "IntelliSense, validation, and override visualization for Claude Code settings files",
   "version": "0.1.0",
-  "publisher": "your-publisher-name",
+  "publisher": "jpegg-dev",
   "engines": {
     "vscode": "^1.85.0"
   },
