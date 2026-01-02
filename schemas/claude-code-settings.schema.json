@@ -1,0 +1,362 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://claude.ai/schemas/claude-code-settings.json",
+  "title": "Claude Code Settings",
+  "description": "Configuration schema for Claude Code settings.json and settings.local.json files",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "apiKeyHelper": {
+      "type": "string",
+      "description": "Path to a custom script that generates authentication tokens. The script should output the token to stdout."
+    },
+    "forceLoginMethod": {
+      "type": "string",
+      "enum": ["claudeai", "console"],
+      "description": "Restrict login to a specific authentication method. 'claudeai' for Claude.ai accounts, 'console' for Anthropic Console accounts."
+    },
+    "forceLoginOrgUUID": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "description": "Auto-select a specific organization by UUID when logging in."
+    },
+    "model": {
+      "type": "string",
+      "description": "Override the default Claude model to use. Examples: 'claude-sonnet-4-20250514', 'claude-opus-4-20250514'."
+    },
+    "outputStyle": {
+      "type": "string",
+      "description": "Adjust the system prompt style. Example: 'Explanatory' for more verbose explanations."
+    },
+    "alwaysThinkingEnabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable extended thinking mode by default for all sessions."
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Configure tool permissions and access controls.",
+      "additionalProperties": false,
+      "properties": {
+        "allow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of tool patterns to allow without prompting. Examples: 'Bash(npm run *)', 'Read', 'Glob'."
+        },
+        "ask": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of tool patterns that require user confirmation. Takes precedence over 'allow'."
+        },
+        "deny": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of tool patterns to block completely. Takes highest precedence."
+        },
+        "defaultMode": {
+          "type": "string",
+          "enum": ["default", "acceptEdits", "plan", "bypassPermissions"],
+          "default": "default",
+          "description": "Default permission behavior mode. 'default' prompts for each action, 'acceptEdits' auto-accepts file edits, 'plan' enables planning mode, 'bypassPermissions' skips all prompts (use with caution)."
+        },
+        "disableBypassPermissionsMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prevent use of the --dangerously-skip-permissions flag."
+        },
+        "additionalDirectories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Additional directories Claude can access beyond the working directory. Paths can be absolute or relative."
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "description": "Configure bash command sandboxing (macOS/Linux only).",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable bash sandboxing for enhanced security."
+        },
+        "autoAllowBashIfSandboxed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically approve bash commands when sandbox is enabled."
+        },
+        "excludedCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Commands to run outside the sandbox."
+        },
+        "allowUnsandboxedCommands": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow the dangerouslyDisableSandbox escape hatch for specific commands."
+        },
+        "network": {
+          "type": "object",
+          "description": "Network access configuration for sandboxed commands.",
+          "additionalProperties": false,
+          "properties": {
+            "allowUnixSockets": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow access to Unix sockets within the sandbox."
+            },
+            "allowLocalBinding": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow binding to localhost (macOS only)."
+            },
+            "httpProxyPort": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "description": "HTTP proxy port for sandboxed network access."
+            },
+            "socksProxyPort": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "description": "SOCKS5 proxy port for sandboxed network access."
+            }
+          }
+        },
+        "enableWeakerNestedSandbox": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable a weaker sandbox for unprivileged Docker containers."
+        }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "description": "Configure attribution in commits and PRs.",
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Commit message attribution. Set to false to disable, true for default, or a custom string. Supports git trailers format."
+        },
+        "pr": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "description": "Pull request description attribution. Set to false to disable, true for default, or a custom string."
+        }
+      }
+    },
+    "includeCoAuthoredBy": {
+      "type": "boolean",
+      "default": true,
+      "deprecated": true,
+      "description": "DEPRECATED: Use 'attribution' instead. Include Co-Authored-By line in commits."
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables to apply to every Claude Code session. Keys are variable names, values are the variable values."
+    },
+    "cleanupPeriodDays": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 30,
+      "description": "Number of days of inactivity before a session is automatically deleted."
+    },
+    "companyAnnouncements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of announcements to display at startup."
+    },
+    "statusLine": {
+      "type": "object",
+      "description": "Custom status line configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["command"],
+          "description": "Status line type. Currently only 'command' is supported."
+        },
+        "command": {
+          "type": "string",
+          "description": "Path to a script that outputs status line content."
+        },
+        "padding": {
+          "type": "string",
+          "description": "Padding configuration for the status line."
+        }
+      }
+    },
+    "fileSuggestion": {
+      "type": "string",
+      "description": "Path to a custom script for @ file autocomplete suggestions."
+    },
+    "hooks": {
+      "type": "object",
+      "description": "Custom commands to run before or after tool execution.",
+      "additionalProperties": false,
+      "properties": {
+        "preToolExecution": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hookConfig"
+          },
+          "description": "Hooks to run before tool execution."
+        },
+        "postToolExecution": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hookConfig"
+          },
+          "description": "Hooks to run after tool execution."
+        },
+        "stop": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hookConfig"
+          },
+          "description": "Hooks to run when Claude stops."
+        },
+        "notification": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/hookConfig"
+          },
+          "description": "Hooks to run for notifications."
+        }
+      }
+    },
+    "disableAllHooks": {
+      "type": "boolean",
+      "default": false,
+      "description": "Disable all hooks."
+    },
+    "allowManagedHooksOnly": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enterprise setting: Only allow hooks from managed settings or SDK."
+    },
+    "enableAllProjectMcpServers": {
+      "type": "boolean",
+      "default": false,
+      "description": "Automatically approve all MCP servers defined in project .mcp.json files."
+    },
+    "enabledMcpjsonServers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specific MCP server names to automatically approve."
+    },
+    "disabledMcpjsonServers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specific MCP server names to automatically reject."
+    },
+    "allowedMcpServers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Enterprise setting: Allowlist of permitted MCP server names or patterns."
+    },
+    "deniedMcpServers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Enterprise setting: Blocklist of forbidden MCP server names or patterns."
+    },
+    "enabledPlugins": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "description": "Enable or disable specific plugins. Format: 'plugin-name@marketplace-name': true/false"
+    },
+    "extraKnownMarketplaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional plugin marketplace sources."
+    },
+    "strictKnownMarketplaces": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Enterprise setting: Allowlist of permitted plugin marketplaces."
+    },
+    "awsAuthRefresh": {
+      "type": "string",
+      "description": "Path to a custom script for refreshing AWS authentication."
+    },
+    "awsCredentialExport": {
+      "type": "string",
+      "description": "Path to a custom script for exporting AWS credentials."
+    },
+    "otelHeadersHelper": {
+      "type": "string",
+      "description": "Path to a script that provides dynamic OpenTelemetry headers."
+    }
+  },
+  "definitions": {
+    "hookConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "The command to execute."
+        },
+        "matcher": {
+          "type": "string",
+          "description": "Pattern to match for triggering the hook."
+        },
+        "timeout": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Timeout in milliseconds for the hook command."
+        }
+      }
+    }
+  }
+}

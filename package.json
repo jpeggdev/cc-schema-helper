@@ -1,0 +1,109 @@
+{
+  "name": "claude-code-settings-helper",
+  "displayName": "Claude Code Settings Helper",
+  "description": "IntelliSense, validation, and override visualization for Claude Code settings files",
+  "version": "0.1.0",
+  "publisher": "your-publisher-name",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Linters"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "settings",
+    "json",
+    "intellisense"
+  ],
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc",
+    "workspaceContains:**/.claude/settings.json",
+    "workspaceContains:**/.claude/settings.local.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "**/.claude/settings.json",
+          "**/.claude/settings.local.json",
+          "**/.claude.json"
+        ],
+        "url": "./schemas/claude-code-settings.schema.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "claudeSettings.goToUserSetting",
+        "title": "Claude Settings: Go to User Setting"
+      },
+      {
+        "command": "claudeSettings.goToProjectSetting",
+        "title": "Claude Settings: Go to Project Setting"
+      },
+      {
+        "command": "claudeSettings.goToLocalSetting",
+        "title": "Claude Settings: Go to Local Setting"
+      },
+      {
+        "command": "claudeSettings.showAllLevels",
+        "title": "Claude Settings: Show Setting at All Levels"
+      },
+      {
+        "command": "claudeSettings.openUserSettings",
+        "title": "Claude Settings: Open User Settings"
+      },
+      {
+        "command": "claudeSettings.openProjectSettings",
+        "title": "Claude Settings: Open Project Settings"
+      },
+      {
+        "command": "claudeSettings.openLocalSettings",
+        "title": "Claude Settings: Open Local Settings"
+      },
+      {
+        "command": "claudeSettings.openLegacyUserSettings",
+        "title": "Claude Settings: Open Legacy User Settings (~/.claude.json)"
+      }
+    ],
+    "configuration": {
+      "title": "Claude Code Settings Helper",
+      "properties": {
+        "claudeSettings.showOverrideCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens indicators for settings that override or are overridden"
+        },
+        "claudeSettings.showOverrideDecorations": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline decorations for override status"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}
